@@ -1,0 +1,338 @@
+Script started on Sat 16 Nov 2019 06:17:30 PM EET
+[01;32mlinder@developer[00m:[01;34m~/Documents/OTUS/Linux/03_lvm[00m [36m[31m(B[0m$ vagrant ssh
+]0;vagrant@lvm:~[?1034h[vagrant@lvm ~]$ lsblk 
+NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda                       8:0    0   40G  0 disk 
+├─sda1                    8:1    0    1M  0 part 
+├─sda2                    8:2    0    1G  0 part /boot
+└─sda3                    8:3    0   39G  0 part 
+  ├─VolGroup00-LogVol00 253:0    0 37.5G  0 lvm  /
+  └─VolGroup00-LogVol01 253:1    0  1.5G  0 lvm  [SWAP]
+sdb                       8:16   0   10G  0 disk 
+sdc                       8:32   0    2G  0 disk 
+sdd                       8:48   0    1G  0 disk 
+sde                       8:64   0    1G  0 disk 
+]0;vagrant@lvm:~[vagrant@lvm ~]$ pvcreate /devsdb[K[K[K/sdb
+  WARNING: Running as a non-root user. Functionality may be unavailable.
+  /run/lvm/lvmetad.socket: access failed: Permission denied
+  WARNING: Failed to connect to lvmetad. Falling back to device scanning.
+  /run/lock/lvm/P_orphans:aux: open failed: Permission denied
+  Can't get lock for orphan PVs.
+]0;vagrant@lvm:~[vagrant@lvm ~]$ sudo -i
+]0;root@lvm:~[?1034h[root@lvm ~]# pvcreate /dev/sda3 [K[K[Kb
+  Physical volume "/dev/sdb" successfully created.
+]0;root@lvm:~[root@lvm ~]# vgcreate otus /dev/sda3 [K[K[Kb
+  Volume group "otus" successfully created
+]0;root@lvm:~[root@lvm ~]# vlcreate -l80%FREE -n tess[Kt or[Ktus
+-bash: vlcreate: command not found
+]0;root@lvm:~[root@lvm ~]# vlcreate -l80%FREE -n test otus[1P[1P[1@l[1@v
+  Logical volume "test" created.
+]0;root@lvm:~[root@lvm ~]# lsblk 
+NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda                       8:0    0   40G  0 disk 
+├─sda1                    8:1    0    1M  0 part 
+├─sda2                    8:2    0    1G  0 part /boot
+└─sda3                    8:3    0   39G  0 part 
+  ├─VolGroup00-LogVol00 253:0    0 37.5G  0 lvm  /
+  └─VolGroup00-LogVol01 253:1    0  1.5G  0 lvm  [SWAP]
+sdb                       8:16   0   10G  0 disk 
+└─otus-test             253:2    0    8G  0 lvm  
+sdc                       8:32   0    2G  0 disk 
+sdd                       8:48   0    1G  0 disk 
+sde                       8:64   0    1G  0 disk 
+]0;root@lvm:~[root@lvm ~]# vgdisplay otus 
+  --- Volume group ---
+  VG Name               otus
+  System ID             
+  Format                lvm2
+  Metadata Areas        1
+  Metadata Sequence No  2
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                1
+  Open LV               0
+  Max PV                0
+  Cur PV                1
+  Act PV                1
+  VG Size               <10.00 GiB
+  PE Size               4.00 MiB
+  Total PE              2559
+  Alloc PE / Size       2047 / <8.00 GiB
+  Free  PE / Size       512 / 2.00 GiB
+  VG UUID               mOztHT-vp4d-ciKh-NoIO-xWfz-8Hpa-kUTCpv
+   
+]0;root@lvm:~[root@lvm ~]# vgdisplay -v otus 
+  --- Volume group ---
+  VG Name               otus
+  System ID             
+  Format                lvm2
+  Metadata Areas        1
+  Metadata Sequence No  2
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                1
+  Open LV               0
+  Max PV                0
+  Cur PV                1
+  Act PV                1
+  VG Size               <10.00 GiB
+  PE Size               4.00 MiB
+  Total PE              2559
+  Alloc PE / Size       2047 / <8.00 GiB
+  Free  PE / Size       512 / 2.00 GiB
+  VG UUID               mOztHT-vp4d-ciKh-NoIO-xWfz-8Hpa-kUTCpv
+   
+  --- Logical volume ---
+  LV Path                /dev/otus/test
+  LV Name                test
+  VG Name                otus
+  LV UUID                OaaIZv-Fwxb-cf8C-6cAd-ZeCP-bAoY-2xM3cm
+  LV Write Access        read/write
+  LV Creation host, time lvm, 2019-11-16 16:19:45 +0000
+  LV Status              available
+  # open                 0
+  LV Size                <8.00 GiB
+  Current LE             2047
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     8192
+  Block device           253:2
+   
+  --- Physical volumes ---
+  PV Name               /dev/sdb     
+  PV UUID               pVEjJc-Tr3O-GVVy-ZuO3-qzf9-ZSHg-nG23q2
+  PV Status             allocatable
+  Total PE / Free PE    2559 / 512
+   
+]0;root@lvm:~[root@lvm ~]# lvdisplay /e[Kdev/otus/test 
+  --- Logical volume ---
+  LV Path                /dev/otus/test
+  LV Name                test
+  VG Name                otus
+  LV UUID                OaaIZv-Fwxb-cf8C-6cAd-ZeCP-bAoY-2xM3cm
+  LV Write Access        read/write
+  LV Creation host, time lvm, 2019-11-16 16:19:45 +0000
+  LV Status              available
+  # open                 0
+  LV Size                <8.00 GiB
+  Current LE             2047
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     8192
+  Block device           253:2
+   
+]0;root@lvm:~[root@lvm ~]# lvcreate -l100M -n small otus 
+  Invalid argument for --extents: 100M
+  Error during parsing of command line.
+]0;root@lvm:~[root@lvm ~]# lvcreate -l100M -n small otus [1P[1@L
+  Logical volume "small" created.
+]0;root@lvm:~[root@lvm ~]# lvs
+  LV       VG         Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  LogVol00 VolGroup00 -wi-ao---- <37.47g                                                    
+  LogVol01 VolGroup00 -wi-ao----   1.50g                                                    
+  small    otus       -wi-a----- 100.00m                                                    
+  test     otus       -wi-a-----  <8.00g                                                    
+]0;root@lvm:~[root@lvm ~]# mkfs.et[Kxt4  [K/dev/otus/test 
+mke2fs 1.42.9 (28-Dec-2013)
+Filesystem label=
+OS type: Linux
+Block size=4096 (log=2)
+Fragment size=4096 (log=2)
+Stride=0 blocks, Stripe width=0 blocks
+524288 inodes, 2096128 blocks
+104806 blocks (5.00%) reserved for the super user
+First data block=0
+Maximum filesystem blocks=2147483648
+64 block groups
+32768 blocks per group, 32768 fragments per group
+8192 inodes per group
+Superblock backups stored on blocks: 
+	32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632
+
+Allocating group tables:  0/64     done                            
+Writing inode tables:  0/64     done                            
+Creating journal (32768 blocks): done
+Writing superblocks and filesystem accounting information:  0/64     done
+
+]0;root@lvm:~[root@lvm ~]# mkdir /data
+]0;root@lvm:~[root@lvm ~]# mount /dev/otus/test /data/
+]0;root@lvm:~[root@lvm ~]# mount
+sysfs on /sys type sysfs (rw,nosuid,nodev,noexec,relatime,seclabel)
+proc on /proc type proc (rw,nosuid,nodev,noexec,relatime)
+devtmpfs on /dev type devtmpfs (rw,nosuid,seclabel,size=110948k,nr_inodes=27737,mode=755)
+securityfs on /sys/kernel/security type securityfs (rw,nosuid,nodev,noexec,relatime)
+tmpfs on /dev/shm type tmpfs (rw,nosuid,nodev,seclabel)
+devpts on /dev/pts type devpts (rw,nosuid,noexec,relatime,seclabel,gid=5,mode=620,ptmxmode=000)
+tmpfs on /run type tmpfs (rw,nosuid,nodev,seclabel,mode=755)
+tmpfs on /sys/fs/cgroup type tmpfs (ro,nosuid,nodev,noexec,seclabel,mode=755)
+cgroup on /sys/fs/cgroup/systemd type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,xattr,release_agent=/usr/lib/systemd/systemd-cgroups-agent,name=systemd)
+pstore on /sys/fs/pstore type pstore (rw,nosuid,nodev,noexec,relatime)
+cgroup on /sys/fs/cgroup/perf_event type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,perf_event)
+cgroup on /sys/fs/cgroup/hugetlb type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,hugetlb)
+cgroup on /sys/fs/cgroup/cpu,cpuacct type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,cpuacct,cpu)
+cgroup on /sys/fs/cgroup/freezer type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,freezer)
+cgroup on /sys/fs/cgroup/blkio type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,blkio)
+cgroup on /sys/fs/cgroup/pids type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,pids)
+cgroup on /sys/fs/cgroup/devices type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,devices)
+cgroup on /sys/fs/cgroup/memory type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,memory)
+cgroup on /sys/fs/cgroup/cpuset type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,cpuset)
+cgroup on /sys/fs/cgroup/net_cls,net_prio type cgroup (rw,nosuid,nodev,noexec,relatime,seclabel,net_prio,net_cls)
+configfs on /sys/kernel/config type configfs (rw,relatime)
+/dev/mapper/VolGroup00-LogVol00 on / type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
+selinuxfs on /sys/fs/selinux type selinuxfs (rw,relatime)
+systemd-1 on /proc/sys/fs/binfmt_misc type autofs (rw,relatime,fd=33,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=12172)
+debugfs on /sys/kernel/debug type debugfs (rw,relatime)
+mqueue on /dev/mqueue type mqueue (rw,relatime,seclabel)
+hugetlbfs on /dev/hugepages type hugetlbfs (rw,relatime,seclabel)
+/dev/sda2 on /boot type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
+sunrpc on /var/lib/nfs/rpc_pipefs type rpc_pipefs (rw,relatime)
+tmpfs on /run/user/0 type tmpfs (rw,nosuid,nodev,relatime,seclabel,size=24140k,mode=700)
+tmpfs on /run/user/1000 type tmpfs (rw,nosuid,nodev,relatime,seclabel,size=24140k,mode=700,uid=1000,gid=1000)
+/dev/mapper/otus-test on /data type ext4 (rw,relatime,seclabel,data=ordered)
+]0;root@lvm:~[root@lvm ~]# mount | grep data
+/dev/mapper/otus-test on /[01;31m[Kdata[m[K type ext4 (rw,relatime,seclabel,[01;31m[Kdata[m[K=ordered)
+]0;root@lvm:~[root@lvm ~]# pvcreate /dev/sdc
+  Physical volume "/dev/sdc" successfully created.
+]0;root@lvm:~[root@lvm ~]# vgex
+vgexport  vgextend  
+[root@lvm ~]# vgextend /dev/s[Kotus /dev/sdc
+  Volume group "otus" successfully extended
+]0;root@lvm:~[root@lvm ~]# vgdisplay -v otus | grep ""P"V" "N"
+  [01;31m[KPV N[m[Kame               /dev/sdb     
+  [01;31m[KPV N[m[Kame               /dev/sdc     
+]0;root@lvm:~[root@lvm ~]# vgs
+  VG         #PV #LV #SN Attr   VSize   VFree 
+  VolGroup00   1   2   0 wz--n- <38.97g     0 
+  otus         2   2   0 wz--n-  11.99g <3.90g
+]0;root@lvm:~[root@lvm ~]# dd if=/dev/zero of=/data/test.log bs=1M count=8000 status=progress
+127926272 bytes (128 MB) copied, 1.003695 s, 127 MB/s222298112 bytes (222 MB) copied, 2.011709 s, 111 MB/s313524224 bytes (314 MB) copied, 3.013004 s, 104 MB/s401604608 bytes (402 MB) copied, 4.021346 s, 99.9 MB/s492830720 bytes (493 MB) copied, 5.462029 s, 90.2 MB/s602931200 bytes (603 MB) copied, 6.462361 s, 93.3 MB/s697303040 bytes (697 MB) copied, 7.474247 s, 93.3 MB/s784334848 bytes (784 MB) copied, 8.501448 s, 92.3 MB/s873463808 bytes (873 MB) copied, 9.505674 s, 91.9 MB/s943718400 bytes (944 MB) copied, 10.512846 s, 89.8 MB/s1038090240 bytes (1.0 GB) copied, 11.530321 s, 90.0 MB/s1126170624 bytes (1.1 GB) copied, 12.531954 s, 89.9 MB/s1214251008 bytes (1.2 GB) copied, 13.536488 s, 89.7 MB/s1308622848 bytes (1.3 GB) copied, 14.544486 s, 90.0 MB/s1387266048 bytes (1.4 GB) copied, 15.551833 s, 89.2 MB/s1478492160 bytes (1.5 GB) copied, 16.557825 s, 89.3 MB/s1566572544 bytes (1.6 GB) copied, 17.560586 s, 89.2 MB/s1658847232 bytes (1.7 GB) copied, 18.564793 s, 89.4 MB/s1747976192 bytes (1.7 GB) copied, 19.576376 s, 89.3 MB/s1820327936 bytes (1.8 GB) copied, 20.580113 s, 88.5 MB/s1916796928 bytes (1.9 GB) copied, 21.582076 s, 88.8 MB/s2004877312 bytes (2.0 GB) copied, 22.590398 s, 88.7 MB/s2100297728 bytes (2.1 GB) copied, 23.592481 s, 89.0 MB/s2193620992 bytes (2.2 GB) copied, 24.603121 s, 89.2 MB/s2258632704 bytes (2.3 GB) copied, 25.605134 s, 88.2 MB/s2347761664 bytes (2.3 GB) copied, 26.606704 s, 88.2 MB/s2442133504 bytes (2.4 GB) copied, 27.613829 s, 88.4 MB/s2534408192 bytes (2.5 GB) copied, 28.614629 s, 88.6 MB/s2620391424 bytes (2.6 GB) copied, 29.619398 s, 88.5 MB/s2675965952 bytes (2.7 GB) copied, 30.633505 s, 87.4 MB/s2770337792 bytes (2.8 GB) copied, 31.636923 s, 87.6 MB/s2867855360 bytes (2.9 GB) copied, 32.638471 s, 87.9 MB/s2956984320 bytes (3.0 GB) copied, 33.643429 s, 87.9 MB/s3052404736 bytes (3.1 GB) copied, 34.646465 s, 88.1 MB/s3124756480 bytes (3.1 GB) copied, 35.651895 s, 87.6 MB/s3211788288 bytes (3.2 GB) copied, 36.654595 s, 87.6 MB/s3305111552 bytes (3.3 GB) copied, 37.669675 s, 87.7 MB/s3400531968 bytes (3.4 GB) copied, 38.670691 s, 87.9 MB/s3492806656 bytes (3.5 GB) copied, 39.674896 s, 88.0 MB/s3554672640 bytes (3.6 GB) copied, 40.679548 s, 87.4 MB/s3652190208 bytes (3.7 GB) copied, 41.684170 s, 87.6 MB/s3742367744 bytes (3.7 GB) copied, 42.685110 s, 87.7 MB/s3832545280 bytes (3.8 GB) copied, 43.692375 s, 87.7 MB/s3917479936 bytes (3.9 GB) copied, 44.694740 s, 87.6 MB/s3987734528 bytes (4.0 GB) copied, 45.705558 s, 87.2 MB/s4082106368 bytes (4.1 GB) copied, 46.709260 s, 87.4 MB/s4172283904 bytes (4.2 GB) copied, 47.712253 s, 87.4 MB/s4256169984 bytes (4.3 GB) copied, 48.712875 s, 87.4 MB/s4348444672 bytes (4.3 GB) copied, 49.722083 s, 87.5 MB/s4416602112 bytes (4.4 GB) copied, 50.723414 s, 87.1 MB/s4484759552 bytes (4.5 GB) copied, 51.726099 s, 86.7 MB/s4548722688 bytes (4.5 GB) copied, 52.733890 s, 86.3 MB/s4640997376 bytes (4.6 GB) copied, 53.735787 s, 86.4 MB/s4733272064 bytes (4.7 GB) copied, 54.740338 s, 86.5 MB/s4821352448 bytes (4.8 GB) copied, 55.743430 s, 86.5 MB/s4905238528 bytes (4.9 GB) copied, 56.748309 s, 86.4 MB/s4980736000 bytes (5.0 GB) copied, 57.751540 s, 86.2 MB/s5058330624 bytes (5.1 GB) copied, 58.761676 s, 86.1 MB/s5142216704 bytes (5.1 GB) copied, 59.764318 s, 86.0 MB/s5232394240 bytes (5.2 GB) copied, 60.765475 s, 86.1 MB/s5319426048 bytes (5.3 GB) copied, 61.770715 s, 86.1 MB/s5408555008 bytes (5.4 GB) copied, 62.777790 s, 86.2 MB/s5499781120 bytes (5.5 GB) copied, 63.782897 s, 86.2 MB/s5576327168 bytes (5.6 GB) copied, 64.785665 s, 86.1 MB/s5661261824 bytes (5.7 GB) copied, 65.801254 s, 86.0 MB/s5742002176 bytes (5.7 GB) copied, 66.813775 s, 85.9 MB/s5834276864 bytes (5.8 GB) copied, 67.822730 s, 86.0 MB/s5919211520 bytes (5.9 GB) copied, 68.823975 s, 86.0 MB/s5986320384 bytes (6.0 GB) copied, 69.825810 s, 85.7 MB/s6067060736 bytes (6.1 GB) copied, 70.832358 s, 85.7 MB/s6155141120 bytes (6.2 GB) copied, 71.833483 s, 85.7 MB/s6243221504 bytes (6.2 GB) copied, 72.839954 s, 85.7 MB/s6332350464 bytes (6.3 GB) copied, 73.846765 s, 85.7 MB/s6410993664 bytes (6.4 GB) copied, 74.849974 s, 85.7 MB/s6501171200 bytes (6.5 GB) copied, 75.856783 s, 85.7 MB/s6589251584 bytes (6.6 GB) copied, 76.857270 s, 85.7 MB/s6675234816 bytes (6.7 GB) copied, 77.867337 s, 85.7 MB/s6769606656 bytes (6.8 GB) copied, 78.881272 s, 85.8 MB/s6845104128 bytes (6.8 GB) copied, 79.891420 s, 85.7 MB/s6927941632 bytes (6.9 GB) copied, 80.903859 s, 85.6 MB/s7013924864 bytes (7.0 GB) copied, 81.906208 s, 85.6 MB/s7105150976 bytes (7.1 GB) copied, 82.908355 s, 85.7 MB/s7193231360 bytes (7.2 GB) copied, 83.917472 s, 85.7 MB/s7268728832 bytes (7.3 GB) copied, 84.924860 s, 85.6 MB/s7352614912 bytes (7.4 GB) copied, 85.940439 s, 85.6 MB/s7438598144 bytes (7.4 GB) copied, 86.942718 s, 85.6 MB/s7523532800 bytes (7.5 GB) copied, 87.947372 s, 85.5 MB/s7612661760 bytes (7.6 GB) copied, 88.958548 s, 85.6 MB/s7687110656 bytes (7.7 GB) copied, 89.959537 s, 85.5 MB/s7767851008 bytes (7.8 GB) copied, 90.974228 s, 85.4 MB/s7853834240 bytes (7.9 GB) copied, 91.979320 s, 85.4 MB/s7940866048 bytes (7.9 GB) copied, 92.981620 s, 85.4 MB/s8024752128 bytes (8.0 GB) copied, 93.985171 s, 85.4 MB/s8099201024 bytes (8.1 GB) copied, 94.989282 s, 85.3 MB/s8169455616 bytes (8.2 GB) copied, 96.066946 s, 85.0 MB/s8236564480 bytes (8.2 GB) copied, 97.138466 s, 84.8 MB/s
+dd: error writing ‘/data/test.log’: No space left on device
+7880+0 records in
+7879+0 records out
+8262189056 bytes (8.3 GB) copied, 97.4393 s, 84.8 MB/s
+]0;root@lvm:~[root@lvm ~]# df -Th /data/
+Filesystem            Type  Size  Used Avail Use% Mounted on
+/dev/mapper/otus-test ext4  7.8G  7.8G     0 100% /data
+]0;root@lvm:~[root@lvm ~]# lvextend -l+80%FREE  /dev/otus/test 
+  Size of logical volume otus/test changed from <8.00 GiB (2047 extents) to <11.12 GiB (2846 extents).
+  Logical volume otus/test successfully resized.
+]0;root@lvm:~[root@lvm ~]# lvs /dev/otus/test 
+  LV   VG   Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  test otus -wi-ao---- <11.12g                                                    
+]0;root@lvm:~[root@lvm ~]# resize2fs /dev/otus/test 
+resize2fs 1.42.9 (28-Dec-2013)
+Filesystem at /dev/otus/test is mounted on /data; on-line resizing required
+old_desc_blocks = 1, new_desc_blocks = 2
+The filesystem on /dev/otus/test is now 2914304 blocks long.
+
+]0;root@lvm:~[root@lvm ~]# df -Th /data/
+Filesystem            Type  Size  Used Avail Use% Mounted on
+/dev/mapper/otus-test ext4   11G  7.8G  2.6G  76% /data
+]0;root@lvm:~[root@lvm ~]# umount /data/
+]0;root@lvm:~[root@lvm ~]# e2fsck -fy /dev/otus/test 
+e2fsck 1.42.9 (28-Dec-2013)
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+/dev/otus/test: 12/729088 files (0.0% non-contiguous), 2105907/2914304 blocks
+]0;root@lvm:~[root@lvm ~]# resize2fs /dev/otus/test 
+resize2fs 1.42.9 (28-Dec-2013)
+The filesystem is already 2914304 blocks long.  Nothing to do!
+
+]0;root@lvm:~[root@lvm ~]# resize2fs /dev/otus/test 10G
+resize2fs 1.42.9 (28-Dec-2013)
+Resizing the filesystem on /dev/otus/test to 2621440 (4k) blocks.
+The filesystem on /dev/otus/test is now 2621440 blocks long.
+
+]0;root@lvm:~[root@lvm ~]# v[Klvres[Kduce /dev/otus/test -L10G
+  WARNING: Reducing active logical volume to 10.00 GiB.
+  THIS MAY DESTROY YOUR DATA (filesystem etc.)
+Do you really want to reduce otus/test? [y/n]: y
+  Size of logical volume otus/test changed from <11.12 GiB (2846 extents) to 10.00 GiB (2560 extents).
+  Logical volume otus/test successfully resized.
+]0;root@lvm:~[root@lvm ~]# mount /dev/otus/test /data/
+]0;root@lvm:~[root@lvm ~]# df -Th /data/
+Filesystem            Type  Size  Used Avail Use% Mounted on
+/dev/mapper/otus-test ext4  9.8G  7.8G  1.6G  84% /data
+]0;root@lvm:~[root@lvm ~]# lvs / [Kdev/otus/test 
+  LV   VG   Attr       LSize  Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  test otus -wi-ao---- 10.00g                                                    
+]0;root@lvm:~[root@lvm ~]# lvcreate -L [K500M -sn test-snap /dev/sd[K[Kotu[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cs/test
+  Logical volume "test-snap" created.
+]0;root@lvm:~[root@lvm ~]# vgs
+  VG         #PV #LV #SN Attr   VSize   VFree 
+  VolGroup00   1   2   0 wz--n- <38.97g     0 
+  otus         2   3   1 wz--n-  11.99g <1.41g
+]0;root@lvm:~[root@lvm ~]# lslo[K[Kblk 
+NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda                       8:0    0   40G  0 disk 
+├─sda1                    8:1    0    1M  0 part 
+├─sda2                    8:2    0    1G  0 part /boot
+└─sda3                    8:3    0   39G  0 part 
+  ├─VolGroup00-LogVol00 253:0    0 37.5G  0 lvm  /
+  └─VolGroup00-LogVol01 253:1    0  1.5G  0 lvm  [SWAP]
+sdb                       8:16   0   10G  0 disk 
+├─otus-small            253:3    0  100M  0 lvm  
+└─otus-test-real        253:4    0   10G  0 lvm  
+  ├─otus-test           253:2    0   10G  0 lvm  /data
+  └─otus-test--snap     253:6    0   10G  0 lvm  
+sdc                       8:32   0    2G  0 disk 
+├─otus-test-real        253:4    0   10G  0 lvm  
+│ ├─otus-test           253:2    0   10G  0 lvm  /data
+│ └─otus-test--snap     253:6    0   10G  0 lvm  
+└─otus-test--snap-cow   253:5    0  500M  0 lvm  
+  └─otus-test--snap     253:6    0   10G  0 lvm  
+sdd                       8:48   0    1G  0 disk 
+sde                       8:64   0    1G  0 disk 
+]0;root@lvm:~[root@lvm ~]# mkdir  [K/data/[K-snap
+]0;root@lvm:~[root@lvm ~]# mount /dev/otus/test-snap /data-snap/
+]0;root@lvm:~[root@lvm ~]# ls /data-snap/
+[0m[01;34mlost+found[0m  test.log
+]0;root@lvm:~[root@lvm ~]# umount /data-snap/
+]0;root@lvm:~[root@lvm ~]# ll /data
+total 8068564
+drwx------. 2 root root      16384 Nov 16 16:22 [0m[01;34mlost+found[0m
+-rw-r--r--. 1 root root 8262189056 Nov 16 16:29 test.log
+]0;root@lvm:~[root@lvm ~]# rm /data/test.log 
+rm: remove regular file ‘/data/test.log’? y
+]0;root@lvm:~[root@lvm ~]# umount /data
+]0;root@lvm:~[root@lvm ~]# lvconvert --merge /dev/otus/test-snap 
+  Merging of volume otus/test-snap started.
+  otus/test: Merged: 100.00%
+]0;root@lvm:~[root@lvm ~]# mount /dev/otus/test /data
+]0;root@lvm:~[root@lvm ~]# ls /data
+[0m[01;34mlost+found[0m  test.log
+]0;root@lvm:~[root@lvm ~]# ll /data
+total 8068564
+drwx------. 2 root root      16384 Nov 16 16:22 [0m[01;34mlost+found[0m
+-rw-r--r--. 1 root root 8262189056 Nov 16 16:29 test.log
+]0;root@lvm:~[root@lvm ~]# pvcreate /dev/sd{}e},}d}
+  Physical volume "/dev/sde" successfully created.
+  Physical volume "/dev/sdd" successfully created.
+]0;root@lvm:~[root@lvm ~]# vgcreate vg0 /dev/sd{}d},}e}
+  Volume group "vg0" successfully created
+]0;root@lvm:~[root@lvm ~]# lvcreate -l+80%FREE -m1 -n mirror vg0 
+  Logical volume "mirror" created.
+]0;root@lvm:~[root@lvm ~]# lvs
+  LV       VG         Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  LogVol00 VolGroup00 -wi-ao---- <37.47g                                                    
+  LogVol01 VolGroup00 -wi-ao----   1.50g                                                    
+  small    otus       -wi-a----- 100.00m                                                    
+  test     otus       -wi-ao----  10.00g                                                    
+  mirror   vg0        rwi-a-r--- 816.00m                                    52.69           
+]0;root@lvm:~[root@lvm ~]# ^C
+]0;root@lvm:~[root@lvm ~]# logout
+]0;vagrant@lvm:~[vagrant@lvm ~]$ ^C
+]0;vagrant@lvm:~[vagrant@lvm ~]$ logout
+Connection to 127.0.0.1 closed.
+[01;32mlinder@developer[00m:[01;34m~/Documents/OTUS/Linux/03_lvm[00m [36m[31m(B[0m$ ^C
+[01;32mlinder@developer[00m:[01;34m~/Documents/OTUS/Linux/03_lvm[00m [36m[31m(B[0m$ ^C
+[01;32mlinder@developer[00m:[01;34m~/Documents/OTUS/Linux/03_lvm[00m [36m[31m(B[0m$ exit
+
+Script done on Sat 16 Nov 2019 06:45:51 PM EET
